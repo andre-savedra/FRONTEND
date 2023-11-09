@@ -2,7 +2,16 @@
     const route = useRoute();
     console.log("route", route);
 
-    const { data: trip } = await useFetch(`http://localhost:8000/trip/${route.params.id}`)  
+    const { data: trip } = await useFetch(`http://localhost:8000/trip/${route.params.id}`,{
+        key:'tripRequest'
+    })  
+    // const { data: availabilities } = await useFetch('http://localhost:8000/availability',{
+    //     query: { tripFK: route.params.id, onlyAvailable: true   }
+    // })    
+    
+    const { data: availabilities } = await useFetch(`http://localhost:8000/availability/?tripFK=${route.params.id}&onlyAvailable=true`,{
+        key: 'availRequest'
+    })
     
     //const { data: peopleFound  } = await useFetch(`https://swapi.dev/api/people/${route.params.id}`)
     //let character;
@@ -36,7 +45,8 @@
                 endDate: endDate,
                 people: peopleAmount,
                 hasPet: hasPet
-            }
+            },
+            key: 'bookingRequest'
         })
 
          
@@ -51,6 +61,19 @@
         <p> {{ trip.description  }} </p>
         <span>Endereço: </span> <span> {{ trip.address  }} </span> <br>
         <h3> Investimento: R$ {{ trip.daily }} </h3>
+
+        <!-- <p v-for="availability in availabilities.results" 
+        :key="availability.id">{{ availability.date }}</p> -->
+        
+        <select>
+            <option v-for="availability in availabilities.results" 
+                :key="availability.id" :value="availability.date">
+                {{ availability.date  }}
+            </option>                                     
+        </select>
+        <br>
+        <br>
+
         <button @click="setShowForm">Reserve já!</button>         
         <section v-if="showForm === true">
             <div>
